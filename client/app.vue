@@ -3,7 +3,7 @@
     <NuxtLayout>
       <VitePwaManifest />
       <NuxtPage />
-      <PreviewOverlay v-if="!isMobile && isPreviewOverlay"/>
+      <PreviewOverlay v-if="!isMobile && isPreviewOverlay" />
     </NuxtLayout>
   </div>
 </template>
@@ -20,17 +20,40 @@ const route = useRoute();
 let show = ref(false);
 let bgIsGray = ref(false);
 
-onMounted(() => {
+onMounted(async () => {
   userStore.colors = colors();
   updatedLinkId.value = 0;
   addLinkOverlay.value = false;
   isPreviewOverlay.value = false;
   isMobile.value = false;
 
+  try {
+    if (userStore.id) {
+      await userStore.hasSessionExpired();
+      await userStore.getUser();
+      await userStore.getAllLinks();
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  checkPath(route.fullPath);
+
   if ("ontouchstart" in window) {
     isMobile.value = true;
   }
+
+  setTimeout(() => (show.value = true), 1);
 });
+
+watch(
+  () => id.value,
+  () => {
+    if (!userStore.colors) {
+      userStore.colors = colors();
+    }
+  }
+);
 
 const colors = () => {
   return [
@@ -82,4 +105,25 @@ const checkPath = (path) => {
   }
   bgIsGray.value = true;
 };
+
+watch(
+  () => route.fullPath,
+  (path) => checkPath(path)
+);
+
+watch(
+  () => isPreviewOverlay.value,
+  (val) => {
+    let id = null;
+    if (route.fullPath == "/admin") {
+      id = "AdminPage";
+    } else if (route.fullPath == "/admin/apperance") {
+      id = "ApperancePage";
+    } else if (route.fullPath == "/admin/settings") {
+      id = "SettingsPage";
+    }
+
+    userStore.hidePageOverflow(val, id);
+  }
+);
 </script>

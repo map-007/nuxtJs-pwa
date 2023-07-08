@@ -1,14 +1,14 @@
 <template>
   <div id="AdminPage" class="flex h-[100vh] pb-4">
     <div
-      class="lg:w-[calc(100%-500px)] md:w-[calc(100%-330px)] w-full md:pt-20 pt-14"
+      class="lg:w-[calc(100%-500px)] md:w-[calc(100%-330px)] w-full md:pt-20"
     >
       <div class="max-w-[750px] mx-auto pb-24">
         <button
           v-if="userStore.isMobile || !showAddLink"
           @click="showAddLinkFunc()"
           class="flex items-center justify-center w-full py-3 rounded-full text-white font-semibold bg-[#8228D9] hover:bg-[#6c21b3]"
-          :class="userStore.isMobile ? 'mt-8 text-xl' : 'mt-20 md:mt-8'"
+          :class="userStore.isMobile ? 'mt-20 text-xl' : 'mt-14 md:mt-8'"
         >
           <Icon
             v-if="!userStore.isMobile"
@@ -52,6 +52,7 @@ import { useUserStore } from "../../store/user";
 
 definePageMeta({
   layout: "adminlayout",
+  middleware: 'is-logged-in'
 });
 
 const userStore = useUserStore();

@@ -45,7 +45,7 @@
           class="rounded-full w-full p-3 font-bold"
           :disabled="!name || !email || !password || !confirmPassword"
           :class="
-            (name && email && password && confirmPassword)
+            name && email && password && confirmPassword
               ? 'bg-[#8228D9] hover:bg-[#6c21b3] text-white'
               : 'bg-[#EFF0EB] text-[#A7AAA2]'
           "
@@ -57,9 +57,7 @@
 
     <div class="text-[14px] text-center pt-12">
       Don't have an account?
-      <NuxtLink to="/" class="text-[#8228d9] underline">
-        Register
-      </NuxtLink>
+      <NuxtLink to="/" class="text-[#8228d9] underline"> Register </NuxtLink>
     </div>
   </div>
 </template>
@@ -68,12 +66,34 @@
 definePageMeta({
   layout: "authlayout",
 });
+import { useUserStore } from "../store/user";
+const userStore = useUserStore()
+const router = useRouter()
 
 let name = ref(null);
 let email = ref(null);
 let password = ref(null);
 let confirmPassword = ref(null);
 let errors = ref(null);
+
+const register = async () => {
+  errors.value = null
+
+  try {
+    await userStore.getTokens()
+    await userStore.register(
+      name.value,
+      email.value,
+      password.value,
+      confirmPassword.value
+    )
+    await userStore.getUser()
+    router.push('/admin')
+  } catch (error) {
+    console.log(error)
+    errors.value = error.response.data.errors
+  }
+}
 </script>
 
 <style>

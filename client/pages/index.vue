@@ -28,7 +28,7 @@
           class="rounded-full w-full p-3 font-bold"
           :disabled="!email || !password"
           :class="
-            (email && password)
+            email && password
               ? 'bg-[#8228D9] hover:bg-[#6c21b3] text-white'
               : 'bg-[#EFF0EB] text-[#A7AAA2]'
           "
@@ -50,11 +50,30 @@
 <script setup>
 definePageMeta({
   layout: "authlayout",
+  middleware: 'is-logged-in'
 });
+import { useUserStore } from "../store/user";
+const userStore = useUserStore();
+const router = useRouter();
 
 let email = ref(null);
 let password = ref(null);
 let errors = ref(null);
+
+const login = async () => {
+  errors.value = null;
+
+  try {
+    await userStore.getTokens();
+    await userStore.login(email.value, password.value);
+    await userStore.getUser();
+    // await userStore.getAllLinks();
+    router.push("/admin");
+  } catch (error) {
+    console.log(error);
+    errors.value = error.response.data.errors;
+  }
+};
 </script>
 
 <style>

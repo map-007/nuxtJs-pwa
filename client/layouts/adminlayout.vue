@@ -77,15 +77,6 @@
               :src="userStore.image"
             />
           </button>
-          <button
-            @click="!isTopNav ? openMenu('TopNav') : (isTopNav = false)"
-            class="rounded-full md:block hidden"
-          >
-            <img
-              class="rounded-full min-w-[40px] w-[40px]"
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSibvKJtq-VzB2zyyrotYleT2adJX0VWLN20j36MuEN6ld2ghuDqnavfiYINs3d7PjjHs8&usqp=CAU"
-            />
-          </button>
         </div>
         <div
           v-if="isTopNav"
@@ -196,7 +187,10 @@
       </div>
     </div>
 
-    <div class="px-2.5 w-full z-0">
+    <div
+      class="w-full z-0"
+      :class="route.fullPath === '/admin/preview' ? '' : 'px-2.5'"
+    >
       <slot />
     </div>
 
@@ -279,12 +273,11 @@ const linksSecondaryNav = ref([
     icon: "fluent:shapes-48-regular",
   },
   { name: "Analytics", url: "/", icon: "tabler:brand-google-analytics" },
-  //   { name: "More", url: "/admin/more", icon: "", img: userStore.image },
   {
     name: "More",
     url: "/admin/more",
     icon: "",
-    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSibvKJtq-VzB2zyyrotYleT2adJX0VWLN20j36MuEN6ld2ghuDqnavfiYINs3d7PjjHs8&usqp=CAU",
+    img: userStore.image,
   },
 ]);
 
@@ -317,7 +310,7 @@ const linksMobile = ref([
     name: "More",
     url: "/admin/more",
     icon: "",
-    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSibvKJtq-VzB2zyyrotYleT2adJX0VWLN20j36MuEN6ld2ghuDqnavfiYINs3d7PjjHs8&usqp=CAU",
+    img: userStore.image,
   },
 ]);
 
@@ -354,7 +347,19 @@ const openMenu = (str) => {
   }
 };
 
-const logout = () => {};
+const logout = async () => {
+  let res = confirm("Are you sure you want to sign out?");
+  try {
+    if (res) {
+      await userStore.logout();
+      router.push("/");
+      return;
+    }
+    isTopNav.value = false;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 watch(
   () => windowWidth.value,

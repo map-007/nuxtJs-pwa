@@ -192,8 +192,8 @@ const cropImage = async () => {
   emit("data", data);
 };
 
-onUnmounted(() => {
-  video.value.pause();
-  video.value.currentTime = 0;
-});
+// onUnmounted(() => {
+//   video.value.pause();
+//   video.value.currentTime = 0;
+// });
 </script>

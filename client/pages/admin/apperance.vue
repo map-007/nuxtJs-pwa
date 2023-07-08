@@ -1,5 +1,5 @@
 <template>
-  <div id="ApperancePage" class="flex h-[calc(100%-50px)] pb-4 ">
+  <div id="ApperancePage" class="flex h-[calc(100%-50px)] pb-4">
     <div
       class="lg:w-[calc(100%-500px)] md:w-[calc(100%-330px)] w-full md:pt-20 pt-14"
     >
@@ -122,61 +122,71 @@
 </template>
 
 <script setup>
-import { useUserStore } from '../../store/user'
+import { useUserStore } from "../../store/user";
 
 definePageMeta({
   layout: "adminlayout",
+  middleware: "is-logged-out",
 });
 
-const userStore = useUserStore()
+const userStore = useUserStore();
 
-let name = ref('')
-let bio = ref('')
-let data = ref(null)
-let errors = ref('')
-let isBioFocused = ref(false)
-let openCropper = ref(false)
+let name = ref("");
+let bio = ref("");
+let data = ref(null);
+let errors = ref("");
+let isBioFocused = ref(false);
+let openCropper = ref(false);
 
 onMounted(() => {
-    name.value = userStore.name
-    bio.value = userStore.bio
-})
+  name.value = userStore.name;
+  bio.value = userStore.bio;
+});
 
 const updateTheme = async (themeId) => {
-    try {
-        await userStore.updateTheme(themeId)
-    } catch (error) {
-        console.log(error)
-    }
-}
+  try {
+    await userStore.updateTheme(themeId);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const updateUserDetails = useDebounce(async () => {
-    try {
-        await userStore.updateUserDetails(name.value, bio.value)
-        await userStore.getUser()
-    } catch (error) {
-        console.log(error)
-        errors.value = error.response.data.errors
-    }
-}, 1000)
+  try {
+    await userStore.updateUserDetails(name.value, bio.value);
+    await userStore.getUser();
+  } catch (error) {
+    console.log(error);
+    errors.value = error.response.data.errors;
+  }
+}, 1000);
 
 const bioLengthComputed = computed(() => {
-    return !bio.value ? 0 : bio.value.length
-})
+  return !bio.value ? 0 : bio.value.length;
+});
 
 const updateUserImage = async () => {
-    try {
-        await userStore.updateUserImage(data.value)
-        await userStore.getUser()
-        setTimeout(() => openCropper.value = false, 300)
-    } catch (error) {
-        openCropper.value = false
-        alert(error)
-        console.log(error)
-    }
-}
+  try {
+    await userStore.updateUserImage(data.value);
+    await userStore.getUser();
+    setTimeout(() => (openCropper.value = false), 300);
+  } catch (error) {
+    openCropper.value = false;
+    alert(error);
+    console.log(error);
+  }
+};
 
-watch(() => name.value, async () => await updateUserDetails())
-watch(() => bio.value, async () => await updateUserDetails())
-watch(() => data.value, async () => await updateUserImage())
+watch(
+  () => name.value,
+  async () => await updateUserDetails()
+);
+watch(
+  () => bio.value,
+  async () => await updateUserDetails()
+);
+watch(
+  () => data.value,
+  async () => await updateUserImage()
+);
 </script>
