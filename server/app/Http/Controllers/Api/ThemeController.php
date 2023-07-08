@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Theme;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\UserRosource;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class UserController extends Controller
+class ThemeController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
         try {
-            return response()->json(new UserRosource(auth()->user()), 200);
+            return response()->json(Theme::all(), 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
@@ -21,19 +24,18 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request)
     {
-        $request->validate([
-            'name' => 'required|max:25',
-            'bio' => 'sometimes|max:80',
-        ]);
+        $request->validate(['theme_id' => 'required']);
 
         try {
-            $user->name = $request->input('name');
-            $user->bio = $request->input('bio');
+            $user = User::findOrFail(auth()->user()->id);
+            $user->theme_id = $request->input('theme_id');
             $user->save();
 
-            return response()->json('USER DETAILS UPDATED', 200);
+            return response()->json([
+                'theme_id' => $user->theme_id
+            ], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
