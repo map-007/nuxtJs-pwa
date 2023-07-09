@@ -57,7 +57,7 @@
 
     <div class="text-[14px] text-center pt-12">
       Don't have an account?
-      <NuxtLink to="/" class="text-[#8228d9] underline"> Register </NuxtLink>
+      <NuxtLink to="/" class="text-[#8228d9] underline"> Log in </NuxtLink>
     </div>
   </div>
 </template>
