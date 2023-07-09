@@ -37,7 +37,6 @@
       <button
         type="submit"
         :disabled="!name && !url"
-        @click="addLink()"
         class="rounded-full p-3 px-6"
         :class="
           name && url
@@ -61,7 +60,7 @@ let name = ref("");
 let url = ref("");
 let errors = ref(null);
 
-const addLink = async () => {
+const submit = async () => {
   try {
     await userStore.addLink(name.value, url.value);
     await userStore.getAllLinks();
